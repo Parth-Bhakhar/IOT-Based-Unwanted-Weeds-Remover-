@@ -1,0 +1,256 @@
+#include <AFMotor.h>//car header file   
+#include <SoftwareSerial.h> // TX RX software library for bluetooth
+#include <Servo.h> // servo library 
+Servo myservo1, myservo2, myservo3, myservo4; // servo name
+
+SoftwareSerial bluetooth(9,10);//rX,TX
+
+//initial motors pin
+AF_DCMotor motor1(1, MOTOR12_1KHZ);
+AF_DCMotor motor2(2, MOTOR12_1KHZ);
+AF_DCMotor motor3(3, MOTOR34_1KHZ);
+AF_DCMotor motor4(4, MOTOR34_1KHZ);
+void setup()
+{
+  myservo1.attach(A5); // attach servo signal wire to pin 9
+  myservo2.attach(A4);
+  myservo3.attach(A3);
+  myservo4.attach(A2);
+  //Setup usb serial connection to computer
+  Serial.begin(9600);
+
+  //Setup Bluetooth serial connection to android
+  bluetooth.begin(9600);
+
+  //initial position to the servo motor
+  myservo1.write(0);
+  myservo2.write(0);
+  myservo3.write(150);
+  myservo4.write(80);
+}
+
+void loop()
+{
+  if (bluetooth.available() > 0) 
+  {
+    char command = bluetooth.read();
+  //Stop(); //initialize with motors stoped
+
+    switch (command) {
+      case 'F':
+        forward();
+        break;
+
+      case 'B':
+        back();
+        break;
+
+      case 'L':
+        left();
+        break;
+
+      case 'R':
+        right();
+        break;
+
+      case 'W':
+        dril();
+        break;
+
+      case 'w':
+        Stopdril();
+        break;
+
+      case 'U':
+        hydromotor();
+        break;
+
+      case 'u':
+        Stopdrill();
+        break;
+
+      case 'S':
+        Stop();
+        break;
+
+      case 'P':
+      Removeplant();
+      break;
+    }
+}
+}
+/*
+Extra 
+motor4.setSpeed(255); //Define maximum velocity
+  motor4.run(FORWARD);  //rotate the motor clockwise
+
+*/
+void Removeplant()
+{
+  for(int i=0;i<120;i++)
+    {
+      myservo2.write(i);
+      delay(12);
+    }
+    for(int i=80;i<145;i++)
+    {
+      myservo4.write(i);
+      delay(5);
+    } 
+    
+    for(int i=150;i>60;i--)
+    {
+      myservo3.write(i);
+      delay(10);
+    } 
+    for(int i=135;i>80;i--)
+    {
+      myservo4.write(i);
+      delay(5);
+    }
+    delay(2000);
+    for(int i=60;i<120;i++)
+    {
+      myservo3.write(i);
+      delay(5);
+    }
+    for(int i=140;i>0;i--)
+    {
+      myservo2.write(i);
+      delay(8);
+    }
+    for(int i=140;i>0;i--)
+    {
+      myservo2.write(i);
+      delay(5);
+    }
+    for(int i=0;i<90;i++)
+    {
+      myservo1.write(i);
+      delay(12);
+    }
+    for(int i=95;i>-5;i--)
+    {
+      myservo1.write(i);
+      delay(12);
+    }
+    myservo1.detach();
+    myservo2.detach();
+    myservo3.detach();
+    myservo4.detach();
+    while (1);
+}
+
+void dril() 
+{
+  motor1.setSpeed(255);  //Define maximum velocity
+  motor1.run(FORWARD);   //rotate the motor clockwise
+}
+void hydromotor() 
+{
+  motor2.setSpeed(0);   //Define minimum velocity
+  motor2.run(RELEASE);  //stop the motor when release the button
+  motor3.setSpeed(0);   //Define minimum velocity
+  motor3.run(RELEASE);  //stop the motor when release the button
+
+
+  motor1.setSpeed(255);  //Define maximum velocity
+  motor1.run(FORWARD);   //rotate the motor clockwise  
+  motor4.setSpeed(255);  //Define maximum velocity
+  motor4.run(FORWARD);   //rotate the motor clockwise
+  delay(300);
+  motor4.setSpeed(0);   //Define minimum velocity
+  motor4.run(RELEASE);  //stop the motor when release the button
+  delay(5000);
+  motor4.setSpeed(255);  //Define maximum velocity
+  motor4.run(FORWARD);   //rotate the motor clockwise
+  delay(300);
+  motor4.setSpeed(0);   //Define minimum velocity
+  motor4.run(RELEASE);  //stop the motor when release the button
+  delay(5000);
+  motor4.setSpeed(255);  //Define maximum velocity
+  motor4.run(FORWARD);   //rotate the motor clockwise
+  delay(300);
+  motor4.setSpeed(0);   //Define minimum velocity
+  motor4.run(RELEASE);  //stop the motor when release the button
+  delay(5000);
+  motor4.setSpeed(255);  //Define maximum velocity
+  motor4.run(FORWARD);   //rotate the motor clockwise
+  delay(300);
+  motor4.setSpeed(0);   //Define minimum velocity
+  motor4.run(RELEASE);  //stop the motor when release the button
+  delay(5000);
+  motor4.setSpeed(255);  //Define maximum velocity
+  motor4.run(BACKWARD);  //rotate the motor clockwise
+  motor1.setSpeed(255);  //Define maximum velocity
+  motor1.run(BACKWARD);  //rotate the motor clockwise
+  delay(1800);
+  motor4.setSpeed(0);   //Define minimum velocity
+  motor4.run(RELEASE);  //stop the motor when release the button
+  motor1.setSpeed(0);   //Define minimum velocity
+  motor1.run(RELEASE);  //stop the motor when release the button
+}
+void Stopdril() 
+{
+  motor1.setSpeed(0);   //Define minimum velocity
+  motor1.run(RELEASE);  //stop the motor when release the button
+}
+void Stopdrill() {
+  motor4.setSpeed(0);   //Define minimum velocity
+  motor4.run(RELEASE);  //stop the motor when release the button
+}
+void forward() {
+
+  motor2.setSpeed(255);  //Define maximum velocity
+  motor2.run(FORWARD);   //rotate the motor clockwise
+  motor3.setSpeed(255);  //Define maximum velocity
+  motor3.run(FORWARD);   //rotate the motor clockwise
+}
+
+/*
+motor1.setSpeed(255); //Define maximum velocity
+  motor1.run(BACKWARD); //rotate the motor anti-clockwise
+  motor4.setSpeed(255); //Define maximum velocity
+  motor4.run(BACKWARD); //rotate the motor anti-clockwise
+*/
+void back() {
+  motor2.setSpeed(255);  //Define maximum velocity
+  motor2.run(BACKWARD);  //rotate the motor anti-clockwise
+  motor3.setSpeed(255);  //Define maximum velocity
+  motor3.run(BACKWARD);  //rotate the motor anti-clockwise
+}
+/*
+kwise
+  motor4.setSpeed(255); //Define maximum velocity
+  motor4.run(FORWARD);  //rotate the motor clockwise
+*/
+void left() {
+  motor2.setSpeed(255);  //Define maximum velocity
+  motor2.run(BACKWARD);  //rotate the motor anti-clockwise
+  motor3.setSpeed(255);  //Define maximum velocity
+  motor3.run(FORWARD);   //rotate the motor clockwise
+}
+/*
+ motor1.setSpeed(255); //Define maximum velocity
+  motor1.run(FORWARD);  //rotate the motor clockwise
+ motor4.setSpeed(255); //Define maximum velocity
+  motor4.run(BACKWARD); //rotate the motor anti-clockwise
+*/
+void right() {
+  motor2.setSpeed(255);  //Define maximum velocity
+  motor2.run(FORWARD);   //rotate the motor clockwise
+  motor3.setSpeed(255);  //Define maximum velocity
+  motor3.run(BACKWARD);  //rotate the motor anti-clockwis
+}
+/*
+  motor4.setSpeed(0);  //Define minimum velocity
+  motor4.run(RELEASE); //stop the motor when release the button
+  motor1.setSpeed(0);  //Define minimum velocity
+  motor1.run(RELEASE); //stop the motor when release the button
+*/
+void Stop() {
+  motor2.setSpeed(0);   //Define minimum velocity
+  motor2.run(RELEASE);  //rotate the motor clockwise
+  motor3.setSpeed(0);   //Define minimum velocity
+  motor3.run(RELEASE);  //stop the motor when release the button
+}
